@@ -8,6 +8,7 @@ import {
     MDBCardImage,
     MDBBtn
   } from 'mdb-react-ui-kit';
+import { Link } from 'react-router-dom';
 
 interface Props {
     menuItem: menuItemModel;
@@ -75,7 +76,9 @@ function MenuItemCard(props:Props) {
     // </div>
     <div className="col-md-4 col-12 p-4">
         <MDBCard>
-            <MDBCardImage src={props.menuItem.image} position='top' alt='...' />
+            <Link to={`/menuItemDetails/${props.menuItem.id}`}>
+                <MDBCardImage src={props.menuItem.image} position='top' alt='...' />
+            </Link>
             <MDBCardBody>
             {props.menuItem.specialTag && props.menuItem.specialTag.length>0 && (
                 <i
@@ -95,7 +98,9 @@ function MenuItemCard(props:Props) {
             )}
                 <MDBCardTitle></MDBCardTitle>
                 <div className="text-center">
-                    <p className="card-title m-0 text-success fs-3">{props.menuItem.name}</p>
+                    <Link to={`/menuItemDetails/${props.menuItem.id}`} style={{textDecoration: "none"}}>
+                        <p className="card-title m-0 text-success fs-3">{props.menuItem.name}</p>
+                    </Link>
                     <p className="badge bg-secondary" style={{ fontSize: "12px" }}>
                         {props.menuItem.category}
                     </p>
