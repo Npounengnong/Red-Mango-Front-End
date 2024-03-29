@@ -1,24 +1,34 @@
-import React, { useEffect, useState } from 'react'
-import { menuItemModel } from '../../../../Interfaces';
-import MenuItemCard from './MenuItemCard';
+import React, { useEffect, useState } from "react";
+import { menuItemModel } from "../../../../Interfaces";
+import MenuItemCard from "./MenuItemCard";
+import { useGetMenuItemsQuery } from "../../../../APIs/menuItemApi";
+import { useDispatch } from "react-redux";
+import { setMenuItem } from "../../../../Storage/Redux/menuItemSlice";
 
 function MenuItemList() {
+  //const [menuItems, setMenuItems] = useState<menuItemModel[]>([]);
 
-    const [menuItems, setMenuItems] = useState<menuItemModel[]>([]);
+  const dispatch = useDispatch();
 
-  useEffect (() => {
-    fetch("https://aurelredmangoapi.azurewebsites.net/api/MenuItem").then((response)=> response.json()).then((data)=>{
-      console.log(data);
-      setMenuItems(data.result);
-    })
-  }, [])
+  const { data, isLoading } = useGetMenuItemsQuery(null);
+
+  useEffect(() => {
+    if (!isLoading) {
+      dispatch(setMenuItem(data.result));
+    }
+  }, [isLoading]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
-    <div className='container row'>
-      {menuItems.length > 0 && menuItems.map((menuItem, index)=>(
-        <MenuItemCard menuItem={menuItem} key={index} />
-      ))}
+    <div className="container row">
+      {data.result.length > 0 &&
+        data.result.map((menuItem: menuItemModel, index: number) => (
+          <MenuItemCard menuItem={menuItem} key={index} />
+        ))}
     </div>
-  )
+  );
 }
 
-export default MenuItemList
+export default MenuItemList;

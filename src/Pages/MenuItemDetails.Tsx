@@ -1,185 +1,142 @@
 import React from "react";
-
+import { useParams } from "react-router-dom";
+import { useGetMenuItemByIdQuery } from "../APIs/menuItemApi";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+// import { useUpdateShoppingCartMutation } from "../APIs/shoppingCartApi";
+// import { MainLoader, MiniLoader } from "../Components/Page/Common";
+// import { apiResponse, userModel } from "../Interfaces";
+// import { toastNotify } from "../Helper";
+import { RootState } from "../Storage/Redux/store";
+import { useSelector } from "react-redux";
 function MenuItemDetails() {
+  const { menuItemId } = useParams();
+  const { data, isLoading } = useGetMenuItemByIdQuery(menuItemId);
+  const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
+  // const [updateShoppingCart] = useUpdateShoppingCartMutation();
+  // const userData: userModel = useSelector(
+  //   (state: RootState) => state.userAuthStore
+  // );
+
+  const handleQuantity = (counter: number) => {
+    let newQuantity = quantity + counter;
+    if (newQuantity == 0) {
+      newQuantity = 1;
+    }
+    setQuantity(newQuantity);
+    return;
+  };
+
+  // const handleAddToCart = async (menuItemId: number) => {
+  //   if (!userData.id) {
+  //     navigate("/login");
+  //     return;
+  //   }
+  //   setIsAddingToCart(true);
+  //   const response: apiResponse = await updateShoppingCart({
+  //     menuItemId: menuItemId,
+  //     updateQuantityBy: quantity,
+  //     userId: userData.id,
+  //   });
+
+  //   if (response.data && response.data.isSuccess) {
+  //     toastNotify("Item added to cart successfully!");
+  //   }
+  //   setIsAddingToCart(false);
+  // };
+
   return (
-    <>
-      <section className="py-5">
-        <div className="container px-4 px-lg-5 my-5">
-          <div className="row gx-4 gx-lg-5 align-items-center">
-            <div className="col-md-6">
-              <img
-                className="card-img-top mb-5 mb-md-0"
-                src="https://dummyimage.com/600x700/dee2e6/6c757d.jpg"
-                alt="..."
-              />
-            </div>
-            <div className="col-md-6">
-              <div className="small mb-1">SKU: BST-498</div>
-              <h1 className="display-5 fw-bolder">Shop item template</h1>
-              <div className="fs-5 mb-5">
-                <span className="text-decoration-line-through">$45.00</span>
-                <span>$40.00</span>
+    <div className="container pt-4 pt-md-5">
+      {!isLoading ? (
+        <div className="row">
+          <div className="col-7">
+            <h2 className="text-success">{data.result?.name}</h2>
+            <span>
+              <span
+                className="badge text-bg-dark pt-2"
+                style={{ height: "40px", fontSize: "20px" }}
+              >
+                {data.result?.category}
+              </span>
+            </span>
+            <span>
+              <span
+                className="badge text-bg-light pt-2"
+                style={{ height: "40px", fontSize: "20px" }}
+              >
+                {data.result?.specialTag}
+              </span>
+            </span>
+            <p style={{ fontSize: "20px" }} className="pt-2">
+              {data.result?.description}
+            </p>
+            <span className="h3">${data.result?.price}</span> &nbsp;&nbsp;&nbsp;
+            <span
+              className="pb-2  p-3"
+              style={{ border: "1px solid #333", borderRadius: "30px" }}
+            >
+              <i
+                onClick={() => {
+                  handleQuantity(-1);
+                }}
+                className="bi bi-dash p-1"
+                style={{ fontSize: "25px", cursor: "pointer" }}
+              ></i>
+              <span className="h3 mt-3 px-3">{quantity}</span>
+              <i
+                className="bi bi-plus p-1"
+                onClick={() => {
+                  handleQuantity(+1);
+                }}
+                style={{ fontSize: "25px", cursor: "pointer" }}
+              ></i>
+            </span>
+            <div className="row pt-4">
+              <div className="col-5">
+                {isAddingToCart ? (
+                  <button disabled className="btn btn-success form-control">
+                    {/* <MiniLoader /> */}
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-success form-control"
+                    // onClick={() => handleAddToCart(data.result?.id)}
+                  >
+                    Add to Cart
+                  </button>
+                )}
               </div>
-              <p className="lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Praesentium at dolorem quidem modi. Nam sequi consequatur
-                obcaecati excepturi alias magni, accusamus eius blanditiis
-                delectus ipsam minima ea iste laborum vero?
-              </p>
-              <div className="d-flex">
-                <input
-                  className="form-control text-center me-3"
-                  id="inputQuantity"
-                  type="num"
-                  value="1"
-                />
+
+              <div className="col-5 ">
                 <button
-                  className="btn btn-outline-dark flex-shrink-0"
-                  type="button"
+                  className="btn btn-secondary form-control"
+                  onClick={() => navigate(-1)}
                 >
-                  <i className="bi-cart-fill me-1"></i>
-                  Add To Cart
+                  Back to Home
                 </button>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-      <section className="py-5 bg-light">
-        <div className="container px-4 px-lg-5 mt-5">
-          <h2 className="fw-bolder mb-4">Related products</h2>
-          <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-            <div className="col mb-5">
-              <div className="card h-100">
-                {/* <!-- Product image--> */}
-                <img
-                  className="card-img-top"
-                  src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg"
-                  alt="..."
-                />
-                {/* <!-- Product details--> */}
-                <div className="card-body p-4">
-                  <div className="text-center">
-                    {/* <!-- Product name--> */}
-                    <h5 className="fw-bolder">Fancy Product</h5>
-                    {/* <!-- Product price--> */}
-                    $40.00 - $80.00
-                  </div>
-                </div>
-
-                {/* <!-- Product actions--> */}
-                <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                  <div className="text-center">
-                    <a className="btn btn-outline-dark mt-auto" href="#">
-                      View options
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col mb-5">
-              <div className="card h-100">
-                {/* <!-- Sale badge--> */}
-                <div className="badge bg-dark text-white position-absolute">
-                  Sale
-                </div>
-                {/* <!-- Product image--> */}
-                <img
-                  className="card-img-top"
-                  src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg"
-                  alt="..."
-                />
-                {/* <!-- Product details--> */}
-                <div className="card-body p-4">
-                  <div className="text-center">
-                    {/* <!-- Product name--> */}
-                    <h5 className="fw-bolder">Special Item</h5>
-                    {/* <!-- Product reviews--> */}
-                    <div className="d-flex justify-content-center small text-warning mb-2">
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                    </div>
-                    {/* Product price */}
-                    <span className="text-muted text-decoration-line-through">
-                      $20.00
-                    </span>
-                    $18.00
-                  </div>
-                </div>
-                <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                  <div className="text-center">
-                    <a className="btn btn-outline-dark mt-auto" href="#">
-                      Add to cart
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col mb-5">
-              <div className="card h-100">
-                <div className="badge bg-dark text-white position-absolute">
-                  Sale
-                </div>
-                <img
-                  className="card-img-top"
-                  src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg"
-                  alt="..."
-                />
-                <div className="card-body p-4">
-                  <div className="text-center">
-                    <h5 className="fw-bolder">Sale Item</h5>
-                    <span className="text-muted text-decoration-line-through">
-                      $50.00
-                    </span>
-                    $25.00
-                  </div>
-                </div>
-
-                <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                  <div className="text-center">
-                    <a className="btn btn-outline-dark mt-auto" href="#">
-                      Add to cart
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col mb-5">
-              <div className="card h-100">
-                <img
-                  className="card-img-top"
-                  src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg"
-                  alt="..."
-                />
-                <div className="card-body p-4">
-                  <div className="text-center">
-                    <h5 className="fw-bolder">Popular Item</h5>
-                    <div className="d-flex justify-content-center small text-warning mb-2">
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                      <div className="bi-star-fill"></div>
-                    </div>
-                    $40.00
-                  </div>
-                </div>
-                <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                  <div className="text-center">
-                    <a className="btn btn-outline-dark mt-auto" href="#">
-                      Add to cart
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="col-5">
+            <img
+              src={data.result.image}
+              width="100%"
+              style={{ borderRadius: "50%" }}
+              alt="No content"
+            ></img>
           </div>
         </div>
-      </section>
-    </>
+      ) : (
+        <div
+          className="d-flex justify-content-center"
+          style={{ width: "100%" }}
+        >
+          {/* <MainLoader /> */}
+        </div>
+      )}
+    </div>
   );
 }
 
